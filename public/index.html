@@ -11,13 +11,29 @@
     <video id="qr-video" style="width: 300px; display: none;"></video>
     <p id="qr-result"></p>
 
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        document.getElementById("scanQR").addEventListener("click", () => {
+        async function requestCameraPermission() {
+            try {
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop()); // Close camera after checking permission
+                return true;
+            } catch (error) {
+                alert("Camera permission is required to scan QR codes.");
+                console.error("Camera permission denied:", error);
+                return false;
+            }
+        }
+
+        document.getElementById("scanQR").addEventListener("click", async () => {
+            const hasPermission = await requestCameraPermission();
+            if (!hasPermission) return;
+
             let video = document.getElementById("qr-video");
             video.style.display = "block";
-            const qrScanner = new Html5QrcodeScanner("qr-video", { fps: 10, qrbox: 250 });
 
+            const qrScanner = new Html5QrcodeScanner("qr-video", { fps: 10, qrbox: 250 });
             qrScanner.render((decodedText) => {
                 document.getElementById("qr-result").innerText = "Scanned: " + decodedText;
 
