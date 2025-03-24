@@ -22,7 +22,9 @@
     <script>
         let scanner;
         let isScanning = false;
-
+    const bodyParser = require("body-parser");
+const { google } = require("googleapis");
+const fs = require("fs");
         // Google Sheet ID & Sheet Name
 const SHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk"; // Replace with your actual Google Sheet ID
 const SHEET_NAME = "Sheet1"; // Change if needed
