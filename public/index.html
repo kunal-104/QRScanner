@@ -5,25 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Attendance</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <style>
-        #qr-box {
-            width: 300px;
-            max-width: 100%;
-            margin: auto;
-            display: none;
-            border: 2px solid black;
-        }
-        #qr-result {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>QR Code Attendance System</h1>
-    <button id="scanQR">Scan QR Code</button>
-    <div id="qr-box"></div>
-    <p id="qr-result"></p>
+    <div class="container">
+        <h1>QR Code Attendance</h1>
+        <p>Scan the guest's QR code to mark attendance.</p>
+        <button id="scanQR">📷 Scan QR Code</button>
+
+        <div id="qr-box"></div>
+        <p id="qr-result"></p>
+    </div>
 
     <script>
         let scanner;
@@ -42,7 +34,7 @@
         }
 
         document.getElementById("scanQR").addEventListener("click", async () => {
-            if (isScanning) return; // Prevent multiple scans
+            if (isScanning) return;
 
             const hasPermission = await requestCameraPermission();
             if (!hasPermission) return;
@@ -52,19 +44,20 @@
 
             scanner = new Html5Qrcode("qr-box");
             scanner.start(
-                { facingMode: "environment" }, // Uses back camera by default
+                { facingMode: "environment" },
                 { fps: 10, qrbox: 250 },
                 (decodedText) => {
-                    document.getElementById("qr-result").innerText = "Scanned: " + decodedText;
+                    document.getElementById("qr-result").innerText = "✅ Scanned: " + decodedText;
 
-                    // Send scanned QR data to the server
                     fetch("/check-attendance", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ qrData: decodedText })
                     })
                     .then(res => res.json())
-                    .then(data => alert(data.message))
+                    .then(data => {
+                        alert(data.message);
+                    })
                     .catch(err => console.error(err));
 
                     scanner.stop();
