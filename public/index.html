@@ -4,20 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Attendance</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        #qr-box {
+            width: 300px;
+            max-width: 100%;
+            margin: auto;
+            display: none;
+            border: 2px solid black;
+        }
+        #qr-result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>QR Code Attendance System</h1>
     <button id="scanQR">Scan QR Code</button>
-    <video id="qr-video" style="width: 300px; display: none;"></video>
+    <div id="qr-box"></div>
     <p id="qr-result"></p>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
+        let scanner;
+        let isScanning = false;
+
         async function requestCameraPermission() {
             try {
-                // Request camera access
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                stream.getTracks().forEach(track => track.stop()); // Close camera after checking permission
+                stream.getTracks().forEach(track => track.stop()); 
                 return true;
             } catch (error) {
                 alert("Camera permission is required to scan QR codes.");
@@ -27,29 +42,37 @@
         }
 
         document.getElementById("scanQR").addEventListener("click", async () => {
+            if (isScanning) return; // Prevent multiple scans
+
             const hasPermission = await requestCameraPermission();
             if (!hasPermission) return;
 
-            let video = document.getElementById("qr-video");
-            video.style.display = "block";
+            isScanning = true;
+            document.getElementById("qr-box").style.display = "block";
 
-            const qrScanner = new Html5QrcodeScanner("qr-video", { fps: 10, qrbox: 250 });
-            qrScanner.render((decodedText) => {
-                document.getElementById("qr-result").innerText = "Scanned: " + decodedText;
+            scanner = new Html5Qrcode("qr-box");
+            scanner.start(
+                { facingMode: "environment" }, // Uses back camera by default
+                { fps: 10, qrbox: 250 },
+                (decodedText) => {
+                    document.getElementById("qr-result").innerText = "Scanned: " + decodedText;
 
-                // Send scanned QR data to server
-                fetch("/check-attendance", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ qrData: decodedText })
-                })
-                .then(res => res.json())
-                .then(data => alert(data.message))
-                .catch(err => console.error(err));
+                    // Send scanned QR data to the server
+                    fetch("/check-attendance", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ qrData: decodedText })
+                    })
+                    .then(res => res.json())
+                    .then(data => alert(data.message))
+                    .catch(err => console.error(err));
 
-                qrScanner.clear();
-                video.style.display = "none";
-            });
+                    scanner.stop();
+                    document.getElementById("qr-box").style.display = "none";
+                    isScanning = false;
+                },
+                (error) => console.warn("QR Code scan error:", error)
+            );
         });
     </script>
 </body>
