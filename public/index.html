@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <h1>QR Code Attendance</h1>
@@ -24,7 +26,7 @@
         async function requestCameraPermission() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                stream.getTracks().forEach(track => track.stop()); 
+                stream.getTracks().forEach(track => track.stop());
                 return true;
             } catch (error) {
                 alert("Camera permission is required to scan QR codes.");
@@ -49,16 +51,16 @@
                 (decodedText) => {
                     document.getElementById("qr-result").innerText = "✅ Scanned: " + decodedText;
 
-                    fetch("/check-attendance", {
+                    fetch("/api/check-attendance", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ qrData: decodedText })
                     })
-                    .then(res => res.json())
-                    .then(data => {
-                        alert(data.message);
-                    })
-                    .catch(err => console.error(err));
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                        })
+                        .catch(err => console.error(err));
 
                     scanner.stop();
                     document.getElementById("qr-box").style.display = "none";
@@ -69,4 +71,5 @@
         });
     </script>
 </body>
+
 </html>
