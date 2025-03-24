@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Attendance</title>
+</head>
+<body>
+    <h1>QR Code Attendance System</h1>
+    <button id="scanQR">Scan QR Code</button>
+    <video id="qr-video" style="width: 300px; display: none;"></video>
+    <p id="qr-result"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode"></script>
+    <script>
+        document.getElementById("scanQR").addEventListener("click", () => {
+            let video = document.getElementById("qr-video");
+            video.style.display = "block";
+            const qrScanner = new Html5QrcodeScanner("qr-video", { fps: 10, qrbox: 250 });
+
+            qrScanner.render((decodedText) => {
+                document.getElementById("qr-result").innerText = "Scanned: " + decodedText;
+
+                // Send scanned QR data to server
+                fetch("/check-attendance", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ qrData: decodedText })
+                })
+                .then(res => res.json())
+                .then(data => alert(data.message))
+                .catch(err => console.error(err));
+
+                qrScanner.clear();
+                video.style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>
