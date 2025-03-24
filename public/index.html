@@ -13,17 +13,13 @@
         <p>Scan the guest's QR code to mark attendance.</p>
         <button id="scanQR">📷 Scan QR Code</button>
 
-        <div id="qr-box" style="display: none;">
-            <div id="reader"></div>
-        </div>
+        <div id="qr-box"></div>
         <p id="qr-result"></p>
-        <p id="error-msg"></p>
     </div>
 
     <script>
         let scanner;
         let isScanning = false;
-        let errorCount = 0;
 
         async function requestCameraPermission() {
             try {
@@ -45,16 +41,11 @@
 
             isScanning = true;
             document.getElementById("qr-box").style.display = "block";
-            document.getElementById("error-msg").innerText = "";
-            errorCount = 0;
 
-            scanner = new Html5Qrcode("reader");
-
-            let qrboxSize = Math.min(window.innerWidth, 250);
-
+            scanner = new Html5Qrcode("qr-box");
             scanner.start(
                 { facingMode: "environment" },
-                { fps: 10, qrbox: qrboxSize },
+                { fps: 10, qrbox: 250 },
                 (decodedText) => {
                     document.getElementById("qr-result").innerText = "✅ Scanned: " + decodedText;
 
@@ -73,15 +64,7 @@
                     document.getElementById("qr-box").style.display = "none";
                     isScanning = false;
                 },
-                (error) => {
-                    errorCount++;
-                    if (errorCount > 5) {
-                        document.getElementById("error-msg").innerText = "⚠️ Unable to scan QR code. Please try again.";
-                        scanner.stop();
-                        document.getElementById("qr-box").style.display = "none";
-                        isScanning = false;
-                    }
-                }
+                (error) => console.warn("QR Code scan error:", error)
             );
         });
     </script>
