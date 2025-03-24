@@ -50,17 +50,17 @@ button:hover {
 }
 
 #qr-box {
-    width: 90%;
-    max-width: 350px;
+    width: 300px;
+    height: 300px;
     margin: 20px auto;
+    display: none;
     border: 3px solid #007bff;
     border-radius: 10px;
-    display: none;
-    overflow: hidden;
 }
 
-#error-msg {
-    color: red;
+#qr-result {
+    font-size: 18px;
     font-weight: bold;
-    margin-top: 10px;
+    color: #28a745;
+    margin-top: 15px;
 }
