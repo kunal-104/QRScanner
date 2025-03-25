@@ -22,7 +22,7 @@
     <script>
         let scanner;
         let isScanning = false;
-
+    
         async function requestCameraPermission() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -34,42 +34,46 @@
                 return false;
             }
         }
-
+    
         document.getElementById("scanQR").addEventListener("click", async () => {
             if (isScanning) return;
-
+    
             const hasPermission = await requestCameraPermission();
             if (!hasPermission) return;
-
+    
             isScanning = true;
             document.getElementById("qr-box").style.display = "block";
-
+    
             scanner = new Html5Qrcode("qr-box");
             scanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: 250 },
-                (decodedText) => {
+                async (decodedText) => {
                     document.getElementById("qr-result").innerText = "✅ Scanned: " + decodedText;
-
+                    console.log("Decoded Text:", decodedText);
+    
+                    // Stop the scanner properly before proceeding
+                    await scanner.stop().then(() => {
+                        document.getElementById("qr-box").style.display = "none";
+                        isScanning = false;
+                    }).catch(err => console.error("Error stopping scanner:", err));
+    
                     fetch("/api/check-attendance", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ qrData: decodedText })
                     })
-                        .then(res => res.json())
-                        .then(data => {
-                            alert(data.message);
-                        })
-                        .catch(err => console.error(err));
-
-                    scanner.stop();
-                    document.getElementById("qr-box").style.display = "none";
-                    isScanning = false;
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                    })
+                    .catch(err => console.error(err));
                 },
                 (error) => console.warn("QR Code scan error:", error)
             );
         });
     </script>
+    
 </body>
 
 </html>
