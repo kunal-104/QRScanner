@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "react-native-maps-441406",
+  "private_key_id": "e96b63a3f845a2ed0465a47b9099e3d0f0924d04",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDvp6SYd4sQXvfc\nP5f9fjyPkgLx+LJTaqaPEgmaibvLjLP3HcLUhUo9PZr+WOiTCheAik0wp4irAmpB\nryrzgnZy8Zq0Vi9KUurXZUoj2pYH8O6ngI3iVys0/O8KSLJWbTeuA3mmQ9OTu1BV\nMqip5L5slDo99MamBdLUqBWbT59/skFjjNsZSanBQUuec1K534tNG328vFQq6smo\ntWGfjK7hB2Esc7qF+da7UgqLg0sVo2aiiODXpBzRyCmK2Q/U+bkSwtNs6MSuXEPT\nM1CJF/ZXSCI0LOIiAyc9J8jeEnePTG5TwyHW+pviJ7L4eJvj/bMC/SYbH42QtVlk\nfz7IwItxAgMBAAECggEAB+pFBOYZ2TIRxJvzFKO5M1KytzQsC5Y/pwUE/S4kXi4o\n+XXpq+Q1Ff21Y0YjdEvGh+/Jadx2ppM/WCkFZaJ+7//ryJ36FN3VNMT7JGEBSITc\nFPspdHrFigv6hx/sh+82ghBKUcP2tm/e0NmJ+YZ9BZAFtmshrnUNyAk/IXCJR4nW\nwkdnXXzMVjkAt4aAxqnioK4ifCiNvcHZaWupXqKymhFWNKGcFC2kPXSQ6Xbi8u5h\nYtixkawXOM+nphPWNajQaUh0oAQZqD6yreCi93LjK8ESHWtu17WOn8GKaGSydIvl\nvIVrGdc8TmFUp/r97NZ8UVCz65milhdxW+EZ18PrwwKBgQD9xBU/n/RndxAnSWk8\nPhRV5GOViGFw8NsQXK5+vt+FIQD9FzJQ5maC7rah2k/qd8qggTMqsQLJcAizzu+b\nw8KLmGkITGGgeXCOOH1KM5IQ7JOlef7yliUNJ0IIa4ZijDkPeQNTsAbXv9Pd5xTy\nHWJLrs2oqlCrm33EOwt/DQrEHwKBgQDxw8HsnxoGgDPARUh/9mxCxByYocCN6nQd\n6iXl+gmu1X+ljOjcbndsvkKLC/ByFVJhGVeOA2zicY1CFK1HLvVKrf4GcaLL71Ww\nr+dNs4HrfbffmphZgFkQw56mnOBPSpatoiNB+BOfg+LChYPYKJsmEPIFEB03Q6/u\nLsd1l6o+bwKBgQDE+E8Z7JkzOgpyxBuH5BO6u6TEa3BezsTqxVW4EYXDeuOej0PB\n4aROGuXtaVvAfazsunwxteWY33oRvxzixaca3XkhNNBOVBSWf6hYUQEeW9MajT/j\nocEunXs2t+c+VOLxbJe1fJtDGaVkxznN2Br07cC6G0C0guOyzbXVrxTdNwKBgCMA\nREMNhacLSHK9lRFxi5re6YTvZgElwEnUbEgvOtek8SX2kH/ZPlDv+pJG2Dir/ZEx\nKgvVUx41ck3u0GdN1RVKu0wTh44eyDkcPlBxfI2rVcN5jjTm7/4NVBqq+45/LfFV\nV+VlFPIzFdEzozLYLh4EtgUloBUwJ3hELXxIyMzhAoGAcKZnguPA0nTS9os9OTFS\n0dZsiiaWQLcPehUbVFnrbuYHrnXhJSe5SoAgRkUDNezJ08bZVjHuRUbdVgqHvUj2\nip5TcaKJPcHACK/uFPSwK8mZeyvQYnv0aYkZJ5QbpSEPukYEY0ueIUFLQnTD+xfs\nj+Co7Gmp9C/a+WBaVrvk00c=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sheeteditor@react-native-maps-441406.iam.gserviceaccount.com",
+  "client_id": "112752981252499580702",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sheeteditor%40react-native-maps-441406.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
