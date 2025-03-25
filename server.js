@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
+console.log("Google Credentials from ENV:", process.env.GOOGLE_CREDENTIALS ? "Loaded" : "Not Loaded");
 
 const app = express();
 app.use(express.static("public"));
