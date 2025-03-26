@@ -35,10 +35,9 @@ const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/val
 const response = await fetch(url);
 const data = await response.json();
 console.log(data.values);  // Logs all rows from Google Sheets
-    alert("getGuest is called");
 }
 
-getGuests();
+// getGuests();
 
 async function fetchStoredNames() {
     try {
@@ -103,7 +102,7 @@ app.post("/api/check-attendance", async (req, res) => {
     const { qrData } = req.body;
 
     console.log(`🔍 Scanned QR Code: ${qrData}`);
-    
+    getGuests();
     const rowIndex = getRowNumber(qrData);
     if (!rowIndex) {
         return res.json({ success: false, message: "❌ Name not found. Please register." });
