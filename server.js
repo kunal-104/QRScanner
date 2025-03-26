@@ -2,36 +2,83 @@ require('dotenv').config({ path: '.env.local' });
 const express = require("express");
 const bodyParser = require("body-parser");
 const { google } = require("googleapis");
-const fs = require("fs");
-const path = require("path");
 
 const app = express();
 app.use(express.static("public"));
 app.use(bodyParser.json());
 
-// 🔹 Google Sheets Authentication
-const credentials = process.env.GOOGLE_CREDENTIALS;
-if (!credentials) {
-    throw new Error("GOOGLE_CREDENTIALS is not set in environment variables.");
+// Secure Environment Variable Handling
+const {
+  GOOGLE_CREDENTIALS,
+  SPREADSHEET_ID,
+  GOOGLE_API_KEY
+} = process.env;
+
+// Validate Environment Variables
+if (!GOOGLE_CREDENTIALS) {
+  console.error("❌ GOOGLE_CREDENTIALS not set");
+  process.exit(1);
 }
 
-const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(credentials), // Parse the JSON string
+if (!SPREADSHEET_ID) {
+  console.error("❌ SPREADSHEET_ID not set");
+  process.exit(1);
+}
+
+if (!GOOGLE_API_KEY) {
+  console.error("❌ GOOGLE_API_KEY not set");
+  process.exit(1);
+}
+
+// Secure Authentication Setup
+let auth;
+try {
+  const credentials = JSON.parse(GOOGLE_CREDENTIALS);
+  auth = new google.auth.GoogleAuth({
+    credentials,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
-});
+  });
+} catch (error) {
+  console.error("❌ Error parsing Google Credentials:", error);
+  process.exit(1);
+}
+
 const sheets = google.sheets({ version: "v4", auth });
 
-// Google Sheet ID & API Key
-const API_KEY = "AIzaSyCACmA9NwFINrLSw7F6mo1P8PJzVdswIPA";  // Replace with your API Key
-const SPREADSHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk";
-
-// 🔹 Store Names from Column A on Server Startup
 let storedNames = [];
 
+// Async function with proper error handling
+async function fetchStoredNames() {
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${GOOGLE_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.values && data.values.length > 0) {
+        storedNames = data.values.flat(); // Store names in an array
+        console.log("✅ Stored Names:", storedNames);
+      return storedNames;
+    } else {
+      console.log("❌ No data found in column A.");
+      return [];
+    }
+  } catch (error) {
+    console.error("❌ Error fetching stored names:", error);
+    return [];
+  }
+}
+
+// Fetch names on server startup
+fetchStoredNames();
 
 async function getGuests() {
     console.log("inside getguests func in server.js");
-const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${API_KEY}`;
+const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${GOOGLE_API_KEY}`;
 const response = await fetch(url);
 const data = await response.json();
 console.log(data.values);  // Logs all rows from Google Sheets
@@ -40,25 +87,6 @@ console.log(data.values);  // Logs all rows from Google Sheets
 getGuests();
 
 
-async function fetchStoredNames() {
-    try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.values && data.values.length > 0) {
-            storedNames = data.values.flat(); // Store names in an array
-            console.log("✅ Stored Names:", storedNames);
-        } else {
-            console.log("❌ No data found in column A.");
-        }
-    } catch (error) {
-        console.error("❌ Error fetching stored names:", error);
-    }
-}
-
-// Fetch names on server startup
-fetchStoredNames();
 
 // 🔹 Function to Get Row Number from Stored Data
 function getRowNumber(name) {
@@ -70,7 +98,7 @@ function getRowNumber(name) {
 async function isAttendanceMarked(rowIndex) {
     try {
         const RANGE = `Sheet1!B${rowIndex}`; // Column B (Attendance)
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${GOOGLE_API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
 
@@ -121,6 +149,132 @@ app.post("/api/check-attendance", async (req, res) => {
 // Start the Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+
+
+// require('dotenv').config({ path: '.env.local' });
+// const express = require("express");
+// const bodyParser = require("body-parser");
+// const { google } = require("googleapis");
+// const fs = require("fs");
+// const path = require("path");
+
+// const app = express();
+// app.use(express.static("public"));
+// app.use(bodyParser.json());
+
+// // 🔹 Google Sheets Authentication
+// const credentials = process.env.GOOGLE_CREDENTIALS;
+// if (!credentials) {
+//     throw new Error("GOOGLE_CREDENTIALS is not set in environment variables.");
+// }
+
+// const auth = new google.auth.GoogleAuth({
+//     credentials: JSON.parse(credentials), // Parse the JSON string
+//     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+// });
+// const sheets = google.sheets({ version: "v4", auth });
+
+// // Google Sheet ID & API Key
+// const API_KEY = "AIzaSyCACmA9NwFINrLSw7F6mo1P8PJzVdswIPA";  // Replace with your API Key
+// const SPREADSHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk";
+
+// // 🔹 Store Names from Column A on Server Startup
+// let storedNames = [];
+
+
+// async function getGuests() {
+//     console.log("inside getguests func in server.js");
+// const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${API_KEY}`;
+// const response = await fetch(url);
+// const data = await response.json();
+// console.log(data.values);  // Logs all rows from Google Sheets
+// }
+
+// getGuests();
+
+
+// async function fetchStoredNames() {
+//     try {
+//         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`;
+//         const response = await fetch(url);
+//         const data = await response.json();
+
+//         if (data.values && data.values.length > 0) {
+//             storedNames = data.values.flat(); // Store names in an array
+//             console.log("✅ Stored Names:", storedNames);
+//         } else {
+//             console.log("❌ No data found in column A.");
+//         }
+//     } catch (error) {
+//         console.error("❌ Error fetching stored names:", error);
+//     }
+// }
+
+// // Fetch names on server startup
+// fetchStoredNames();
+
+// // 🔹 Function to Get Row Number from Stored Data
+// function getRowNumber(name) {
+//     const rowIndex = storedNames.indexOf(name);
+//     return rowIndex !== -1 ? rowIndex + 1 : null; // Adjust for header row
+// }
+
+// // 🔹 Check if Attendance is Already Marked
+// async function isAttendanceMarked(rowIndex) {
+//     try {
+//         const RANGE = `Sheet1!B${rowIndex}`; // Column B (Attendance)
+//         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+//         const response = await fetch(url);
+//         const data = await response.json();
+
+//         return data.values && data.values[0] && data.values[0][0] === "✅ Present";
+//     } catch (error) {
+//         console.error("❌ Error checking attendance:", error);
+//         return false;
+//     }
+// }
+
+// // 🔹 Mark Attendance in Google Sheets
+// async function markAttendance(rowIndex) {
+//     try {
+//         const RANGE = `Sheet1!B${rowIndex}`; // Column B for attendance
+//         await sheets.spreadsheets.values.update({
+//             spreadsheetId: SPREADSHEET_ID,
+//             range: RANGE,
+//             valueInputOption: "RAW",
+//             resource: { values: [["✅ Present"]] }
+//         });
+
+//         console.log(`✅ Attendance marked for Row ${rowIndex}`);
+//     } catch (error) {
+//         console.error("❌ Error marking attendance:", error);
+//     }
+// }
+
+// // 🔹 API to Check QR Code & Mark Attendance
+// app.post("/api/check-attendance", async (req, res) => {
+//     const { qrData } = req.body;
+
+//     console.log(`🔍 Scanned QR Code: ${qrData}`);
+    
+//     const rowIndex = getRowNumber(qrData);
+//     if (!rowIndex) {
+//         return res.json({ success: false, message: "❌ Name not found. Please register." });
+//     }
+
+//     const alreadyMarked = await isAttendanceMarked(rowIndex);
+//     if (alreadyMarked) {
+//         return res.json({ success: false, message: "⚠️ QR is already scanned! For entry, you need to register." });
+//     }
+
+//     await markAttendance(rowIndex);
+//     return res.json({ success: true, message: `✅ Attendance marked for ${qrData}` });
+// });
+
+// // Start the Server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
 
 
