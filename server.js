@@ -32,8 +32,10 @@ if (!GOOGLE_API_KEY) {
 
 // Secure Authentication Setup
 let auth;
+let credentials;
+
 try {
-  const credentials = JSON.parse(GOOGLE_CREDENTIALS);
+  credentials = JSON.parse(GOOGLE_CREDENTIALS);
   auth = new google.auth.GoogleAuth({
     credentials,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
