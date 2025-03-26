@@ -29,6 +29,16 @@ const SPREADSHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk";
 // 🔹 Store Names from Column A on Server Startup
 let storedNames = [];
 
+async function getGuests() {
+    console.log("inside getguests func in server.js");
+const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${API_KEY}`;
+const response = await fetch(url);
+const data = await response.json();
+console.log(data.values);  // Logs all rows from Google Sheets
+}
+
+getGuests();
+
 async function fetchStoredNames() {
     try {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`;
