@@ -35,6 +35,7 @@ const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/val
 const response = await fetch(url);
 const data = await response.json();
 console.log(data.values);  // Logs all rows from Google Sheets
+    alert("getGuest is called");
 }
 
 getGuests();
