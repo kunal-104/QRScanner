@@ -1,23 +1,16 @@
-require('dotenv').config({ path: '.env.local' });
 const express = require("express");
 const bodyParser = require("body-parser");
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
-console.log("Google Credentials from ENV:", process.env.GOOGLE_CREDENTIALS ? "Loaded" : "Not Loaded");
 
 const app = express();
 app.use(express.static("public"));
 app.use(bodyParser.json());
 
 // 🔹 Google Sheets Authentication
-const credentials = process.env.GOOGLE_CREDENTIALS;
-if (!credentials) {
-    throw new Error("GOOGLE_CREDENTIALS is not set in environment variables.");
-}
-
 const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(credentials), // Parse the JSON string
+    keyFile: "react-native-maps-441406-2c68e22d50ce.json", // Replace with your JSON file path
     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 const sheets = google.sheets({ version: "v4", auth });
@@ -29,19 +22,9 @@ const SPREADSHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk";
 // 🔹 Store Names from Column A on Server Startup
 let storedNames = [];
 
-async function getGuests() {
-    console.log("inside getguests func in server.js");
-const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${API_KEY}`;
-const response = await fetch(url);
-const data = await response.json();
-console.log(data.values);  // Logs all rows from Google Sheets
-}
-
-// getGuests();
-
 async function fetchStoredNames() {
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`;
+        const url = https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY};
         const response = await fetch(url);
         const data = await response.json();
 
@@ -68,8 +51,8 @@ function getRowNumber(name) {
 // 🔹 Check if Attendance is Already Marked
 async function isAttendanceMarked(rowIndex) {
     try {
-        const RANGE = `Sheet1!B${rowIndex}`; // Column B (Attendance)
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+        const RANGE = Sheet1!B${rowIndex}; // Column B (Attendance)
+        const url = https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY};
         const response = await fetch(url);
         const data = await response.json();
 
@@ -83,7 +66,7 @@ async function isAttendanceMarked(rowIndex) {
 // 🔹 Mark Attendance in Google Sheets
 async function markAttendance(rowIndex) {
     try {
-        const RANGE = `Sheet1!B${rowIndex}`; // Column B for attendance
+        const RANGE = Sheet1!B${rowIndex}; // Column B for attendance
         await sheets.spreadsheets.values.update({
             spreadsheetId: SPREADSHEET_ID,
             range: RANGE,
@@ -91,7 +74,7 @@ async function markAttendance(rowIndex) {
             resource: { values: [["✅ Present"]] }
         });
 
-        console.log(`✅ Attendance marked for Row ${rowIndex}`);
+        console.log(✅ Attendance marked for Row ${rowIndex});
     } catch (error) {
         console.error("❌ Error marking attendance:", error);
     }
@@ -101,8 +84,8 @@ async function markAttendance(rowIndex) {
 app.post("/api/check-attendance", async (req, res) => {
     const { qrData } = req.body;
 
-    console.log(`🔍 Scanned QR Code: ${qrData}`);
-    getGuests();
+    console.log(🔍 Scanned QR Code: ${qrData});
+    
     const rowIndex = getRowNumber(qrData);
     if (!rowIndex) {
         return res.json({ success: false, message: "❌ Name not found. Please register." });
@@ -114,12 +97,12 @@ app.post("/api/check-attendance", async (req, res) => {
     }
 
     await markAttendance(rowIndex);
-    return res.json({ success: true, message: `✅ Attendance marked for ${qrData}` });
+    return res.json({ success: true, message: ✅ Attendance marked for ${qrData} });
 });
 
 // Start the Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(🚀 Server running on port ${PORT}));
 
 
 
