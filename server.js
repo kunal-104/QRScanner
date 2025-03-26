@@ -24,7 +24,7 @@ let storedNames = [];
 
 async function fetchStoredNames() {
     try {
-        const url = https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY};
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
 
@@ -51,8 +51,8 @@ function getRowNumber(name) {
 // 🔹 Check if Attendance is Already Marked
 async function isAttendanceMarked(rowIndex) {
     try {
-        const RANGE = Sheet1!B${rowIndex}; // Column B (Attendance)
-        const url = https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY};
+        const RANGE = 'Sheet1!B${rowIndex}'; // Column B (Attendance)
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
 
@@ -66,7 +66,7 @@ async function isAttendanceMarked(rowIndex) {
 // 🔹 Mark Attendance in Google Sheets
 async function markAttendance(rowIndex) {
     try {
-        const RANGE = Sheet1!B${rowIndex}; // Column B for attendance
+        const RANGE = 'Sheet1!B${rowIndex}'; // Column B for attendance
         await sheets.spreadsheets.values.update({
             spreadsheetId: SPREADSHEET_ID,
             range: RANGE,
@@ -74,7 +74,7 @@ async function markAttendance(rowIndex) {
             resource: { values: [["✅ Present"]] }
         });
 
-        console.log(✅ Attendance marked for Row ${rowIndex});
+        console.log(`✅ Attendance marked for Row ${rowIndex}`);
     } catch (error) {
         console.error("❌ Error marking attendance:", error);
     }
@@ -84,7 +84,7 @@ async function markAttendance(rowIndex) {
 app.post("/api/check-attendance", async (req, res) => {
     const { qrData } = req.body;
 
-    console.log(🔍 Scanned QR Code: ${qrData});
+    console.log(`🔍 Scanned QR Code: ${qrData}`);
     
     const rowIndex = getRowNumber(qrData);
     if (!rowIndex) {
@@ -97,7 +97,7 @@ app.post("/api/check-attendance", async (req, res) => {
     }
 
     await markAttendance(rowIndex);
-    return res.json({ success: true, message: ✅ Attendance marked for ${qrData} });
+    return res.json({ success: true, message: `✅ Attendance marked for ${qrData}` });
 });
 
 // Start the Server
