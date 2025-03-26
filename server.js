@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' });
 const express = require("express");
 const bodyParser = require("body-parser");
 const { google } = require("googleapis");
@@ -9,8 +10,13 @@ app.use(express.static("public"));
 app.use(bodyParser.json());
 
 // 🔹 Google Sheets Authentication
+const credentials = process.env.GOOGLE_CREDENTIALS;
+if (!credentials) {
+    throw new Error("GOOGLE_CREDENTIALS is not set in environment variables.");
+}
+
 const auth = new google.auth.GoogleAuth({
-    keyFile: "react-native-maps-441406-2c68e22d50ce.json", // Replace with your JSON file path
+    credentials: JSON.parse(credentials), // Parse the JSON string
     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 const sheets = google.sheets({ version: "v4", auth });
@@ -21,6 +27,18 @@ const SPREADSHEET_ID = "1LG8akyNt1ViNRLVyUuJtssVtFEK9NhywUZMe9bLCjWk";
 
 // 🔹 Store Names from Column A on Server Startup
 let storedNames = [];
+
+
+async function getGuests() {
+    console.log("inside getguests func in server.js");
+const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1?key=${API_KEY}`;
+const response = await fetch(url);
+const data = await response.json();
+console.log(data.values);  // Logs all rows from Google Sheets
+}
+
+getGuests();
+
 
 async function fetchStoredNames() {
     try {
@@ -51,7 +69,7 @@ function getRowNumber(name) {
 // 🔹 Check if Attendance is Already Marked
 async function isAttendanceMarked(rowIndex) {
     try {
-        const RANGE = 'Sheet1!B${rowIndex}'; // Column B (Attendance)
+        const RANGE = `Sheet1!B${rowIndex}`; // Column B (Attendance)
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -66,7 +84,7 @@ async function isAttendanceMarked(rowIndex) {
 // 🔹 Mark Attendance in Google Sheets
 async function markAttendance(rowIndex) {
     try {
-        const RANGE = 'Sheet1!B${rowIndex}'; // Column B for attendance
+        const RANGE = `Sheet1!B${rowIndex}`; // Column B for attendance
         await sheets.spreadsheets.values.update({
             spreadsheetId: SPREADSHEET_ID,
             range: RANGE,
@@ -102,8 +120,7 @@ app.post("/api/check-attendance", async (req, res) => {
 
 // Start the Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(🚀 Server running on port ${PORT}));
-
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
 
 
